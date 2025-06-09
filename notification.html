@@ -6,16 +6,27 @@
 </head>
 <body>
   <h1>Waiting for Order Notification...</h1>
+  <button id="enableSound">Enable Notification Sound</button>
   <audio id="notifSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
   <script>
     const channel = new BroadcastChannel('order_channel');
     const audio = document.getElementById('notifSound');
+    let soundEnabled = false;
+
+    // Require user interaction to "unlock" audio
+    document.getElementById('enableSound').addEventListener('click', () => {
+      audio.play().catch(() => {});  // Try play silently
+      soundEnabled = true;
+      alert("🔊 Sound enabled. You can now receive notifications.");
+    });
 
     channel.onmessage = (event) => {
       if (event.data === 'order_done') {
         alert("🔔 Order Done!");
-        audio.play();
+        if (soundEnabled) {
+          audio.play();
+        }
       }
     };
   </script>
