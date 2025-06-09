@@ -5,6 +5,7 @@
 </head>
 <body>
   <h1>Waiting for Orders...</h1>
+
   <button id="enableSound">Enable Notification Sound</button>
   <p id="status">Sound not enabled</p>
 
@@ -21,11 +22,10 @@
     let repeatInterval = null;
 
     document.getElementById('enableSound').addEventListener('click', () => {
-      // Play audio to unlock sound
       audio.play().then(() => {
         soundEnabled = true;
         statusText.textContent = "🔊 Sound enabled. Ready for orders!";
-        alert("Sound enabled. Notifications will play beep repeatedly until accepted.");
+        alert("Sound enabled. Notification beep will repeat when order arrives.");
       }).catch(err => {
         alert("Failed to enable sound: " + err);
       });
@@ -52,6 +52,7 @@
 
     channel.onmessage = (event) => {
       if (event.data === 'order_done') {
+        // Show alert first, then start beep sound after user clicks OK
         alert("🚨 New Order Received!");
         if (soundEnabled) {
           playSoundRepeatedly();
