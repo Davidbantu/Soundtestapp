@@ -10,7 +10,7 @@
 
   <button id="acceptOrder" style="display:none;">Accept Order</button>
 
-  <audio id="notifSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
   <script>
     const channel = new BroadcastChannel('order_channel');
@@ -21,11 +21,11 @@
     let repeatInterval = null;
 
     document.getElementById('enableSound').addEventListener('click', () => {
-      audio.currentTime = 0;
+      // Play audio to unlock sound
       audio.play().then(() => {
         soundEnabled = true;
         statusText.textContent = "🔊 Sound enabled. Ready for orders!";
-        alert("Sound enabled. Notifications will play beep sound repeatedly until accepted.");
+        alert("Sound enabled. Notifications will play beep repeatedly until accepted.");
       }).catch(err => {
         alert("Failed to enable sound: " + err);
       });
@@ -38,7 +38,7 @@
       repeatInterval = setInterval(() => {
         audio.currentTime = 0;
         audio.play().catch(() => {});
-      }, 3000); // play beep every 3 seconds
+      }, 3000);
     }
 
     function stopSound() {
