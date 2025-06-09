@@ -8,8 +8,7 @@
   <button id="enableSound">Enable Notification Sound</button>
   <p id="status">Sound not enabled</p>
 
-  <!-- Notification sound file -->
-  <audio id="notifSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
   <script>
     const channel = new BroadcastChannel('order_channel');
@@ -17,20 +16,25 @@
     const statusText = document.getElementById('status');
     let soundEnabled = false;
 
-    // User must enable sound by clicking this button (required by mobile browsers)
+    // Unlock audio playback on user interaction
     document.getElementById('enableSound').addEventListener('click', () => {
-      audio.play().catch(() => {}); // Try to unlock audio
-      soundEnabled = true;
-      statusText.textContent = "🔊 Sound enabled. Ready to receive orders!";
-      alert("Sound enabled. You will now hear notification sounds.");
+      audio.currentTime = 0;
+      audio.play().then(() => {
+        soundEnabled = true;
+        statusText.textContent = "🔊 Sound enabled. Ready for orders!";
+        alert("Sound enabled. Notifications will play sound.");
+      }).catch(err => {
+        alert("Failed to enable sound: " + err);
+      });
     });
 
-    // Listen for new orders
+    // Listen for orders
     channel.onmessage = (event) => {
       if (event.data === 'order_done') {
         alert("🚨 New Order Received!");
         if (soundEnabled) {
-          audio.play();
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
         }
       }
     };
