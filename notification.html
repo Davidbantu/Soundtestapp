@@ -1,0 +1,23 @@
+<!-- notification.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notification Page</title>
+</head>
+<body>
+  <h1>Waiting for Order Notification...</h1>
+  <audio id="notifSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+  <script>
+    const channel = new BroadcastChannel('order_channel');
+    const audio = document.getElementById('notifSound');
+
+    channel.onmessage = (event) => {
+      if (event.data === 'order_done') {
+        alert("🔔 Order Done!");
+        audio.play();
+      }
+    };
+  </script>
+</body>
+</html>
