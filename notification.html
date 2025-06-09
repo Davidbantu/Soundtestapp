@@ -8,36 +8,63 @@
   <button id="enableSound">Enable Notification Sound</button>
   <p id="status">Sound not enabled</p>
 
-  <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+  <button id="acceptOrder" style="display:none;">Accept Order</button>
+
+  <audio id="notifSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
   <script>
     const channel = new BroadcastChannel('order_channel');
     const audio = document.getElementById('notifSound');
     const statusText = document.getElementById('status');
+    const acceptBtn = document.getElementById('acceptOrder');
     let soundEnabled = false;
+    let repeatInterval = null;
 
-    // Unlock audio playback on user interaction
     document.getElementById('enableSound').addEventListener('click', () => {
       audio.currentTime = 0;
       audio.play().then(() => {
         soundEnabled = true;
         statusText.textContent = "🔊 Sound enabled. Ready for orders!";
-        alert("Sound enabled. Notifications will play sound.");
+        alert("Sound enabled. Notifications will play beep sound repeatedly until accepted.");
       }).catch(err => {
         alert("Failed to enable sound: " + err);
       });
     });
 
-    // Listen for orders
+    function playSoundRepeatedly() {
+      if (repeatInterval) clearInterval(repeatInterval);
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+      repeatInterval = setInterval(() => {
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+      }, 3000); // play beep every 3 seconds
+    }
+
+    function stopSound() {
+      if (repeatInterval) {
+        clearInterval(repeatInterval);
+        repeatInterval = null;
+      }
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
     channel.onmessage = (event) => {
       if (event.data === 'order_done') {
         alert("🚨 New Order Received!");
         if (soundEnabled) {
-          audio.currentTime = 0;
-          audio.play().catch(() => {});
+          playSoundRepeatedly();
+          acceptBtn.style.display = 'inline-block';
         }
       }
     };
+
+    acceptBtn.addEventListener('click', () => {
+      stopSound();
+      acceptBtn.style.display = 'none';
+      alert("Order accepted. Sound stopped.");
+    });
   </script>
 </body>
 </html>
