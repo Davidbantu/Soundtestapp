@@ -25,7 +25,7 @@
       audio.play().then(() => {
         soundEnabled = true;
         statusText.textContent = "🔊 Sound enabled. Ready for orders!";
-        alert("Sound enabled. Notification beep will repeat when order arrives.");
+        alert("Sound enabled. Notification beep will play immediately with alert.");
       }).catch(err => {
         alert("Failed to enable sound: " + err);
       });
@@ -52,7 +52,10 @@
 
     channel.onmessage = (event) => {
       if (event.data === 'order_done') {
-        // Show alert first, then start beep sound after user clicks OK
+        if (soundEnabled) {
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
+        }
         alert("🚨 New Order Received!");
         if (soundEnabled) {
           playSoundRepeatedly();
